@@ -5,14 +5,14 @@ provider "aws" {
 variable "user_names" {
   description = "Create IAM users with these names"
   type        = list(string)
-  default     = ["aws04-neo", "aws04-trinity", "aws04-morpheus"]
+  default     = ["aws04-neo", "aws04-morpheus"]
 }
 
 resource "aws_iam_user" "example" {
-  count = length(var.user_names)
-  name  = var.user_names[count.index]
+  for_each = toset(var.user_names)
+  name     = each.value
 }
 
-output "neo_arn" {
-  value = aws_iam_user.example[*].arn
+output "all_user" {
+  value = values(aws_iam_user.example)[0].arn
 }
